@@ -1,0 +1,125 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/wait.h>
+
+#define MAX_COMMAND_LENGTH 100
+#define MAX_PATH 4096
+
+
+char* cd_formatter (char* com){
+	
+	int len = sizeof(com);
+	for(int i =2;i<len;i++){
+		if(com[i]!= ' '){
+			char* fCom = (char*) malloc(sizeof(char) * len-i);
+			for(int j = i; j<len;j++){
+				fCom[j-i] = com[j]; 
+			}
+			return (char*)fCom;
+		}
+			
+	}
+	
+}
+
+pid_t execute_function(char* com){
+	
+	if(com[0]=='c' && com[1] =='d'){
+		printf("cd command\n");
+		/**************/
+		char* dir = (char*) malloc(sizeof(char) *4096);
+		
+		dir = (char*) cd_formatter(com);
+		chdir(dir);
+		pid_t dirfork = fork();
+		if(dirfork<0){
+			printf("The fork failed !\n");
+		}
+		
+		else if(dirfork==0){
+			execl("pwd","pwd");
+		}
+		
+		
+		
+		
+	}
+	
+	pid_t filsID = fork();
+	if(filsID< 0 ){
+		printf("The fork call failed! \n");
+		exit(-1);
+		
+	}
+	
+	
+	else if(filsID==0){
+	
+		printf("Executing the command : %s \n", com);
+		execl(com,com);
+	
+	}
+	
+	else{
+		printf("Created a new process : %d \n", filsID);
+		
+	}
+	
+}
+
+
+
+
+
+
+char* string_formatter(char* string){
+
+	
+	int len = sizeof(string);
+	for(int i =0;i<len; i++){
+	
+		if(string[i]!=' '){
+			char* formatted_string = (char*) malloc(sizeof(char)*(len-i));
+			for(int j =i ;j<len; j++){
+				formatted_string[j-i] = string[j]; 
+			}
+			return formatted_string;
+		
+		}	
+		
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+int main(){
+
+	while(1){
+	
+		char* entree = (char* ) malloc(sizeof(char) * 100);
+		printf("Enter the entree \n");
+		scanf("%s", entree);
+		printf("got the input :%s \n",entree);
+		execute_function(entree);
+	
+		
+	}
+	return 0;
+	
+		
+	
+
+}
